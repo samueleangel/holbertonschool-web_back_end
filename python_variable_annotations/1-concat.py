@@ -4,6 +4,7 @@ Script for a type-annotated function that concats two
 values of type string
 """
 
+
 def concat(str1: str, str2: str) -> str:
     """
     Function to sum (concat) the variables str1
