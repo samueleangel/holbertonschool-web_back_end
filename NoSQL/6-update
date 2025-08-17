@@ -1,0 +1,6 @@
+// my comment
+// Update all docs with name = "Holberton school"
+db.school.updateMany(
+  { name: "Holberton school" },
+  { $set: { address: "972 Mission street" } }
+)
