@@ -4,20 +4,9 @@ Module that defines a function to find all schools
 that teach a given topic.
 """
 
-from typing import List, Dict
-from pymongo.collection import Collection
 
-
-def schools_by_topic(mongo_collection: Collection,
-                     topic: str) -> List[Dict]:
+def schools_by_topic(mongo_collection, topic):
+    """ function that returns the list of school
+        having a specific topic
     """
-    Return all school documents containing the topic.
-
-    Args:
-        mongo_collection: pymongo collection object.
-        topic: topic string to search.
-
-    Returns:
-        List of matching documents.
-    """
-    return list(mongo_collection.find({"topics": topic}))
+    return mongo_collection.find({"topics": topic})
