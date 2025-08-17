@@ -28,14 +28,15 @@ class Server:
     def dataset(self) -> List[List[str]]:
         """Return the cached dataset (header removed)."""
         if self.__dataset is None:
-            with open(self.DATA_FILE) as f:
+            with open(self.DATA_FILE, newline="") as f:
                 reader = csv.reader(f)
-                dataset: List[List[str]] = [row for row in reader]
-            self.__dataset = dataset[1:]
+                rows: List[List[str]] = [row for row in reader]
+            self.__dataset = rows[1:]
         return self.__dataset
 
-    def get_page(self, page: int = 1,
-                 page_size: int = 10) -> List[List[str]]:
+    def get_page(
+        self, page: int = 1, page_size: int = 10
+    ) -> List[List[str]]:
         """
         Return the page slice for given page and page_size.
 
@@ -52,30 +53,32 @@ class Server:
             return []
         return data[start:end]
 
-    def get_hyper(self, page: int = 1,
-                  page_size: int = 10) -> Dict[str, Any]:
+    def get_hyper(
+        self, page: int = 1, page_size: int = 10
+    ) -> Dict[str, Any]:
         """
         Return hypermedia pagination payload.
 
         Includes page_size, page, data, next_page, prev_page and
         total_pages. Reuses get_page for the data slice.
         """
-        data_page = self.get_page(page, page_size)
-        total_items = len(self.dataset())
-        total_pages = math.ceil(total_items / page_size)
+        dataset_items = len(self.dataset())
+        data = self.get_page(page, page_size)
+        total_pages = math.ceil(dataset_items / page_size)
 
         next_page: Optional[int] = (
-            page + 1 if page < total_pages else None
+            page + 1 if (page + 1) < total_pages else None
         )
         prev_page: Optional[int] = (
-            page - 1 if page > 1 else None
+            page - 1 if (page - 1) > 0 else None
         )
 
         return {
-            "page_size": len(data_page),
             "page": page,
-            "data": data_page,
+            "page_size": page_size if page < total_pages else 0,
+            "data": data,
             "next_page": next_page,
             "prev_page": prev_page,
             "total_pages": total_pages,
         }
+
