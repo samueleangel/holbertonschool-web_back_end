@@ -8,8 +8,7 @@ from typing import Any, Dict, List, Optional
 
 
 class Server:
-    """Server class to paginate a database of popular baby names.
-    """
+    """Server class to paginate a database of popular baby names."""
     DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self) -> None:
@@ -32,18 +31,20 @@ class Server:
         if self.__indexed_dataset is None:
             data = self.dataset()
             # Build full index map (do not truncate).
-            self.__indexed_dataset = {i: row for i, row in enumerate(data)}
+            self.__indexed_dataset = {i: r for i, r in enumerate(data)}
         return self.__indexed_dataset
 
     def get_hyper_index(
-        self, index: Optional[int] = None, page_size: int = 10
+        self,
+        index: Optional[int] = None,
+        page_size: int = 10
     ) -> Dict[str, Any]:
         """
         Return a deletion-resilient page starting at `index`.
 
-        The page is collected by walking the indexed map from `index`
-        and skipping missing keys, until `page_size` items are taken.
-        The `next_index` points to the first index after the last item.
+        Walk the indexed map from `index`, skipping missing keys,
+        until `page_size` items are taken. `next_index` is the first
+        index after the last collected item.
         """
         assert isinstance(page_size, int) and page_size > 0
 
@@ -54,19 +55,19 @@ class Server:
 
         index_map = self.indexed_dataset()
         # Validate against the original length, not current count.
-        max_base_len = len(self.dataset())
-        assert index < max_base_len
+        base_len = len(self.dataset())
+        assert index < base_len
 
         data: List[List[str]] = []
         cur = index
 
         # Collect up to `page_size` existing rows.
-        while len(data) < page_size and cur < max_base_len:
+        while len(data) < page_size and cur < base_len:
             if cur in index_map:
                 data.append(index_map[cur])
             cur += 1
 
-        next_index: Optional[int] = cur if cur < max_base_len else None
+        next_index: Optional[int] = cur if cur < base_len else None
 
         return {
             "index": index,
