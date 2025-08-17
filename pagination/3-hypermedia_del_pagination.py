@@ -4,7 +4,6 @@ Deletion-resilient hypermedia pagination
 """
 
 import csv
-import math
 from typing import Any, Dict, List, Optional
 
 
@@ -20,10 +19,12 @@ class Server:
     def dataset(self) -> List[List[str]]:
         """Return the cached dataset (header removed)."""
         if self.__dataset is None:
-            with open(self.DATA_FILE) as f:
+            with open(
+                self.DATA_FILE, newline="", encoding="utf-8"
+            ) as f:
                 reader = csv.reader(f)
-                dataset: List[List[str]] = [row for row in reader]
-            self.__dataset = dataset[1:]
+                rows: List[List[str]] = [row for row in reader]
+            self.__dataset = rows[1:]
         return self.__dataset
 
     def indexed_dataset(self) -> Dict[int, List[str]]:
@@ -34,8 +35,9 @@ class Server:
             self.__indexed_dataset = {i: row for i, row in enumerate(data)}
         return self.__indexed_dataset
 
-    def get_hyper_index(self, index: int = None,
-                        page_size: int = 10) -> Dict[str, Any]:
+    def get_hyper_index(
+        self, index: Optional[int] = None, page_size: int = 10
+    ) -> Dict[str, Any]:
         """
         Return a deletion-resilient page starting at `index`.
 
@@ -68,7 +70,7 @@ class Server:
 
         return {
             "index": index,
-            "data": data,
-            "page_size": len(data),
             "next_index": next_index,
+            "page_size": len(data),
+            "data": data,
         }

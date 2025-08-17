@@ -28,14 +28,17 @@ class Server:
     def dataset(self) -> List[List[str]]:
         """Return the cached dataset (header removed)."""
         if self.__dataset is None:
-            with open(self.DATA_FILE) as f:
+            with open(
+                self.DATA_FILE, newline="", encoding="utf-8"
+            ) as f:
                 reader = csv.reader(f)
-                dataset: List[List[str]] = [row for row in reader]
-            self.__dataset = dataset[1:]
+                rows: List[List[str]] = [row for row in reader]
+            self.__dataset = rows[1:]
         return self.__dataset
 
-    def get_page(self, page: int = 1,
-                 page_size: int = 10) -> List[List[str]]:
+    def get_page(
+        self, page: int = 1, page_size: int = 10
+    ) -> List[List[str]]:
         """
         Return the page slice for given page and page_size.
 
